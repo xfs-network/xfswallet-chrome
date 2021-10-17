@@ -130,6 +130,9 @@ class HomePage extends Component {
     let networks = await globaldb.listAllNetwork();
     let defaultnet = await globaldb.getDefaultNet();
     let defaultAddr = await accountdb.getDefault();
+    if (!defaultAddr){
+      return;
+    }
     let accountInfo = await accountdb.getAccount(defaultAddr);
     let accountBalance = await accountdb.getAddressBalance(accountInfo.addr, defaultnet);
     let txhashes = await accountdb.getAddressTxs(accountInfo.addr, defaultnet);
