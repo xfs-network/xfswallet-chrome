@@ -1,0 +1,12 @@
+{
+    "name": "XFS Wallet",
+    "description": "XFS Wallet",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "background": {
+      "service_worker": "background.js"
+    }
+}

@@ -1,0 +1,36 @@
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #232e3c;
+    background-color: rgba(244,246,250);
+    border-color: rgba(101,109,119,.24);
+    white-space: nowrap;
+    font-weight: 500;
+    line-height: 1.4285714;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .4375rem 1rem;
+    font-size: .875rem;
+    border-radius: 4px;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.btn-primary {
+    background-color: rgba(32,107,196,1);
+    color: #f4f6fa;
+}
+
+.btn.disabled, .btn:disabled {
+    pointer-events: none;
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+.btn-danger {
+    background-color: rgb(214,57,57);
+    color: #f4f6fa;
+}
