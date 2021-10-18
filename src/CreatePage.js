@@ -43,6 +43,7 @@ class CreatePage extends Component {
   }
   async handleCreteWallet(){
     const {history, db: {globaldb, accountdb}} = this.props;
+    await globaldb.initialSetup();
     await globaldb.setPassword(this.state.password1);
     let a = genRadmonAccount();
     await accountdb.addAccount('My Account 1', a);

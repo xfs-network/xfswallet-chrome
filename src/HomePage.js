@@ -170,7 +170,7 @@ class HomePage extends Component {
 
     this.inrvSyncBalance = setInterval(async () => {
       let accountBalance = await accountdb.getAddressBalance(accountInfo.addr, defaultnet);
-      if (this.state.accountBalance !== accountBalance) {
+      if (this.state.accountBalance !== 0 && this.state.accountBalance !== accountBalance) {
         await Notify.success('Balance has been changed');
       }
       this.setState({

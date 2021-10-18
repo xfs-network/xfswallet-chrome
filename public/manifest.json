@@ -13,8 +13,5 @@
         "24": "icon24.png",
         "32": "icon32.png"
       }
-    },
-    "background": {
-      "service_worker": "background.js"
     }
 }

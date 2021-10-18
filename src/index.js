@@ -22,7 +22,13 @@ class BackgroundService {
     const { globaldb } = this.db;
     while (this.run) {
       let defnet = await globaldb.getDefaultNet();
+      if (!defnet){
+        continue;
+      }
       let netitem = await globaldb.getNetwork(defnet);
+      if (!netitem){
+        continue;
+      }
       let client = new HttpJsonRpcClient({ url: netitem.rpcurl });
       try {
         let result = await client.call({
@@ -39,9 +45,18 @@ class BackgroundService {
   async syncbalance() {
     const { accountdb,globaldb } = this.db;
     while (this.run) {
-      let defaddr = await accountdb.getDefault();
       let defnet = await globaldb.getDefaultNet();
+      if (!defnet){
+        continue;
+      }
       let netitem = await globaldb.getNetwork(defnet);
+      if (!defnet){
+        continue;
+      }
+      let defaddr = await accountdb.getDefault();
+      if (!defnet){
+        continue;
+      }
       let client = new HttpJsonRpcClient({ url: netitem.rpcurl });
       try {
         let result = await client.call({
