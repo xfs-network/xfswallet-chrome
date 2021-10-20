@@ -218,6 +218,7 @@ class Transaction {
         if (enc.length === 0){
             return [];
         }
+        // console.log('enc', enc);
         let txsignhash = stringhash256(enc);
         return hex2array(txsignhash);
     }

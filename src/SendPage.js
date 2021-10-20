@@ -66,12 +66,14 @@ class SendPage extends Component {
     }
     let acc = await accountdb.getAccount(this.state.fromaddr);
     let network = await globaldb.getNetwork(this.state.networkid);
+    let nonce = await accountdb.getAddressNonce(this.state.fromaddr, this.state.networkid);
     let txdata = new Transaction({
       to: this.state.toaddr,
       value: valuedata,
       gasLimit: this.state.gaslimit,
       gasPrice: this.state.gasprice,
-      data: this.state.data
+      data: this.state.data,
+      nonce: nonce,
     });
     txdata.signWithPrivateKey(acc.key.key);
     let txdatajson = txdata.toJSON();
@@ -85,11 +87,11 @@ class SendPage extends Component {
         }
       });
       await accountdb.setAddressTx(this.state.fromaddr, this.state.networkid, txdata);
+      await accountdb.setAddressNonce(this.state.fromaddr, this.state.networkid, nonce+1);
       await Notify.success('Send transaction succeeded');
       history.goBack();
     }catch(e){
-      console.error(e);
-      await Notify.error('Send message err');
+      await Notify.error(e.message);
     }
   }
   render() {
@@ -112,7 +114,7 @@ class SendPage extends Component {
         if (this.state.data.length > 0){
           err = false;
         }
-      }else if(/^[0-9a-zA-Z]+$/.test(this.state.toaddr)){
+      }else if(/^[0-9a-zA-Z]{33}$/.test(this.state.toaddr)){
         err = false;
       }
       return classNames(
@@ -173,9 +175,18 @@ class SendPage extends Component {
       );
     }
     let datahintclasses = () => {
+      let err = true;
+      if (this.state.data.length === 0){
+        err = false
+      }else if(/^0[xX][0-9a-fA-F]+$/.test(this.state.data)){
+        if (this.state.data.length % 2 === 0){
+          err = false
+        }
+      }
       return classNames(
         {
-          ['hint-color-default']: true
+          ['hint-color-red']: err,
+          ['hint-color-default']: !err
         }, 'form-hint'
       );
     }
@@ -184,7 +195,7 @@ class SendPage extends Component {
         if (this.state.data.length === 0){
           return true;
         }
-      }else if(!/^[0-9a-zA-Z]+$/.test(this.state.toaddr)) {
+      }else if(!/^[0-9a-zA-Z]{33}$/.test(this.state.toaddr)) {
         return true;
       }
       if (this.state.value.length === 0) {
@@ -199,6 +210,14 @@ class SendPage extends Component {
       }
       if (!/^[0-9]+$/g.test(this.state.gaslimit)){
         return true;
+      }
+      if (this.state.data.length > 0){
+        if (!/^0[xX][0-9a-fA-F]+$/.test(this.state.data)){
+          return true;
+        }
+        if (this.state.data.length % 2 !== 0){
+          return true;
+        }
       }
       return false;
     };
@@ -343,7 +362,7 @@ class SendPage extends Component {
               <div>
                 <div className="input-group">
                   <textarea class="form-control" rows="3"
-                    placeholder="data.."
+                    placeholder="0x"
                     value={this.state.data}
                     onChange={(e) => {
                       let val = e.target.value;

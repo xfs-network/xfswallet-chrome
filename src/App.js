@@ -18,6 +18,7 @@ import KeyImportPage from "./KeyImportPage";
 import NetworkMgrPage from "./NetworkMgrPage";
 import NewNetwork from "./newnetwork";
 import NetworkDetail from "./networkdetail";
+import ResetNoncePage from "./resetnoncepage";
 
 
 
@@ -41,8 +42,8 @@ function AuthPage({ history, db: { globaldb } }, c) {
 }
 
 class App extends Component {
-
   render() {
+    
     return (
       <div>
         <Switch>
@@ -82,6 +83,9 @@ class App extends Component {
           </Route>
           <Route exact path="/networkdetail">
             <NetworkDetail {...this.props}></NetworkDetail>
+          </Route>
+          <Route exact path="/resetnonce">
+            <ResetNoncePage {...this.props}></ResetNoncePage>
           </Route>
           <Route exact path="/createpage">
             <CreatePage {...this.props}></CreatePage>

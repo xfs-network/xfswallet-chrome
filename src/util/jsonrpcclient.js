@@ -13,7 +13,7 @@ class HttpJsonRpcClient {
             let resp = await this.axioscli.post('/', this.packreq(opts));
             if (Object.keys(resp.data).indexOf('error') === 0) {
                 const {error: {code ,message}} = resp.data;
-                throw new Error(`RPC Request err: code=${code}, message=${message}`);
+                throw new Error(message);
             }
             const {id, jsonrpc, result} = resp.data;
             if (id !== 1){

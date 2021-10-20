@@ -58,7 +58,7 @@ function EyeView(props) {
 
 
 function HomeTrasactionItem(props) {
-  const { hash, to, value,status } = props;
+  const { hash, to, value,status, onItemClick } = props;
   let baseval = atto2base(value);
   let valf = parseFloat(baseval);
   let valstr = defaultTxsValueFormat(valf);
@@ -71,7 +71,7 @@ function HomeTrasactionItem(props) {
     }, 'badge'
   );
   return (
-    <div className="home-list-item cur-p">
+    <div className="home-list-item cur-p" onClick={(e)=>{onItemClick(e, hash)}}>
       <div className="item-left">
         <span className="avatar">
           TX
@@ -94,12 +94,13 @@ function HomeTrasactionItem(props) {
 }
 
 function HomeTransactionList(props) {
+  const {onItemClick} = props;
   return (
     <div className="home-list-data">
       <DataEmpty show={!(props.data) || props.data.length == 0} />
       {props.data.map((item) => {
         return (
-          <HomeTrasactionItem {...item} />
+          <HomeTrasactionItem {...item} onItemClick={onItemClick} />
         );
       })}
     </div>
@@ -183,9 +184,13 @@ class HomePage extends Component {
     clearInterval(this.inrvSyncNetStatus);
     clearInterval(this.inrvSyncBalance);
   }
+
+  handleTxItemClick(e, tx){
+    console.log(`0x${tx}`);
+  }
   handleToAccountDetialPage(e) {
     this.props.history.push('/accountdetail',
-      { addr: this.state.accountInfo.addr });
+      { addr: this.state.accountInfo.addr, netid: this.state.defaultnet });
   }
   async handleNetChange(e) {
     const { history, db: { globaldb, accountdb } } = this.props;
@@ -259,7 +264,10 @@ class HomePage extends Component {
           <div className="home-list-title">
             Transactions
           </div>
-          <HomeTransactionList data={this.state.transactions} />
+          <HomeTransactionList
+           data={this.state.transactions}
+           onItemClick={(e,tx)=>{this.handleTxItemClick(e,tx)}}
+            />
         </div>
       </div>
     );

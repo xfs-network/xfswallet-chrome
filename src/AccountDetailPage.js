@@ -28,6 +28,7 @@ class AccountDetailPage extends Component {
     this.state = {
       name: '',
       addr: '',
+      netid: '',
     }
   }
   handleChangeName(e){
@@ -62,10 +63,21 @@ class AccountDetailPage extends Component {
   async componentWillMount() {
     const { history, db: { globaldb, accountdb } } = this.props;
     let gotaddr = history.location.state.addr;
+    let netid = history.location.state.netid;
     let account = await accountdb.getAccount(gotaddr);
     this.setState({
+      netid: netid,
       ...account
     });
+  }
+  async handleCleanTxs(){
+    const { history, db: { globaldb, accountdb } } = this.props;
+    await accountdb.delAddressTxsByNetid(this.state.addr, this.state.netid);
+    await Notify.success('Successfully clean');
+  }
+  async handleResetNonce(){
+    const { history, db: { globaldb, accountdb } } = this.props;
+    history.push('/resetnonce', {addr: this.state.addr, netid: this.state.netid});
   }
   render() {
     let nameInputHintClasses = classNames(
@@ -111,12 +123,22 @@ class AccountDetailPage extends Component {
               <Button color="primary"
                 disabled={createbtndisenabled}
                 onClick={async (e)=>this.handleSubmitUpdate(e)}>
-                Submit Update
+                Submit
               </Button>
               <hr/>
               <Button
                 onClick={async ()=>this.handleExportKey()}>
                 Export Key
+              </Button>
+              <hr/>
+              <Button
+                onClick={async ()=>this.handleCleanTxs()}>
+                Clean Local Transactions
+              </Button>
+              <hr/>
+              <Button
+                onClick={async ()=>this.handleResetNonce()}>
+                Reset nonce
               </Button>
               <hr/>
               <Button
