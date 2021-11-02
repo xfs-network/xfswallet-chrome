@@ -185,7 +185,7 @@ class Transaction {
     }
     correctedObj(){
         let gasPrice = new BN(this.gasPrice, 10);
-        let gasLimit = new BN(this.gasPrice, 10);
+        let gasLimit = new BN(this.gasLimit, 10);
         let value = new BN(this.value, 10);
         let valueStr = value.toString(10);
         let gasPriceStr = gasPrice.toString(10);
