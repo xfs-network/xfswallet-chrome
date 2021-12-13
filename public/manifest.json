@@ -13,5 +13,21 @@
         "24": "icon24.png",
         "32": "icon32.png"
       }
-    }
+    },
+    "permissions": ["tabs","activeTab", "scripting"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["injectscript.js"]
+      }
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": ["contentscript.js"],
+        "matches": ["<all_urls>"]
+      }
+    ]
 }

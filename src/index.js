@@ -5,14 +5,14 @@ import './index.css';
 import { Router } from "react-router-dom";
 
 import { createMemoryHistory /* , createBrowserHistory */ } from 'history';
-import { AccountDB, GlobalDB } from "./storage";
+import { AccountDB, ExtraDB, GlobalDB } from "./storage";
 import App from "./App";
 import HttpJsonRpcClient from "./util/jsonrpcclient";
 
 const history = createMemoryHistory();
-
 let accountdb = new AccountDB('xfswalletacc');
 let globaldb = new GlobalDB('xfswalletglobal');
+let extradb = new ExtraDB('xfswalletextra');
 class BackgroundService {
   constructor(params) {
     this.run = false;
@@ -108,13 +108,16 @@ function sleep(t) {
 }
 
 bs.start();
+
 ReactDOM.render(
   <Router history={history} db={{
     accountdb: accountdb,
-    globaldb: globaldb
+    globaldb: globaldb,
+    extradb: extradb,
   }}>
     <App history={history} db={{
       accountdb: accountdb,
-      globaldb: globaldb
+      globaldb: globaldb,
+      extradb: extradb,
     }} />
   </Router>, document.getElementById("root"));

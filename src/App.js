@@ -42,8 +42,17 @@ function AuthPage({ history, db: { globaldb } }, c) {
 }
 
 class App extends Component {
+  constructor(props){
+    super(props);
+    // console.log(this.props);
+  }
+  async componentDidMount(){
+    const {db: {extradb}} = this.props;
+    console.log('app', extradb);
+    const pageState = await extradb.getPageState();
+    console.log('pageState', pageState);
+  }
   render() {
-    
     return (
       <div>
         <Switch>
