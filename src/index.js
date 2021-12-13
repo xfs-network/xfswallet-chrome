@@ -54,7 +54,7 @@ class BackgroundService {
         continue;
       }
       let defaddr = await accountdb.getDefault();
-      if (!defnet){
+      if (!defnet || !defaddr){
         continue;
       }
       let client = new HttpJsonRpcClient({ url: netitem.rpcurl });

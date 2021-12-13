@@ -1,6 +1,7 @@
 
 import { BN } from "bn.js";
 import { genRandomKey,hash256,_ripemd160,b582str,importKeyFromPrivate, signFromKey, stringhash256 } from "./crypto";
+import {atto2nano, nano2atto} from "./xfslibutil";
 
 const XFSVERSION = 1;
 const XFS_KEY_VER = 1;
@@ -178,22 +179,15 @@ class Transaction {
         this.data = params.data;
         this.nonce = params.nonce;
         this.value = params.value;
-        this.timestamp = params.timestamp;
-        if (!this.timestamp){
-            this.timestamp = new Date().getTime();
-        }
     }
     correctedObj(){
-        let gasPrice = new BN(this.gasPrice, 10);
+        let gasPriceAtto = nano2atto(this.gasPrice);
+        let gasPrice = new BN(gasPriceAtto, 10);
         let gasLimit = new BN(this.gasLimit, 10);
         let value = new BN(this.value, 10);
         let valueStr = value.toString(10);
         let gasPriceStr = gasPrice.toString(10);
         let gasLimitStr = gasLimit.toString(10);
-        let timestamp = this.timestamp;
-        if(String(timestamp).length > 10){
-            timestamp = Math.floor(this.timestamp/1000);
-        }
         let signature = array2hex(this.signature);
         let nonce = 0;
         if (this.nonce) {
@@ -207,7 +201,6 @@ class Transaction {
             data: this.data,
             nonce: String(nonce),
             value: valueStr,
-            timestamp: String(timestamp),
             signature: signature,
         };
     }

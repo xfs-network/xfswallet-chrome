@@ -6,7 +6,7 @@ import { Button, Notify } from "./components";
 import { calcGasFee } from "./util/common";
 import HttpJsonRpcClient from "./util/jsonrpcclient";
 import { exportKey, signTransaction, Transaction } from "./util/xfslib";
-import { atto2base, base2atto } from "./util/xfslibutil";
+import { atto2base, atto2nano, base2atto, nano2atto,nano2base } from "./util/xfslibutil";
 
 function Appbar(props) {
   return (
@@ -28,10 +28,8 @@ function Appbar(props) {
 }
 
 
-const MinimumGasLimit = 100;
-const MinimumGasPrice = 100;
-const DefaultGasLimit = '100';
-const DefaultGasPrice = '100';
+const MinimumGasLimit = 25000;
+const MinimumGasPrice = 10;
 class SendPage extends Component {
   constructor(props) {
     super(props);
@@ -39,8 +37,8 @@ class SendPage extends Component {
       toaddr: '',
       value: '',
       isComstomGas: false,
-      gaslimit: DefaultGasLimit,
-      gasprice: DefaultGasPrice,
+      gaslimit: MinimumGasLimit.toString(),
+      gasprice: MinimumGasPrice.toString(),
       isAdvanced: false,
       data: '',
       fromaddr: '',
@@ -80,6 +78,7 @@ class SendPage extends Component {
     });
     txdata.signWithPrivateKey(acc.key.key);
     let txdatajson = txdata.toJSON();
+    console.log(`txdata(obj), hash=${txdata.hash()}`, txdata.correctedObj());
     let txjsonb64 = Base64.encode(txdatajson);
     let client = new HttpJsonRpcClient({url: network.rpcurl});
     try{
@@ -98,8 +97,8 @@ class SendPage extends Component {
     }
   }
   render() {
-    let gasfeeatto = calcGasFee(this.state.gasprice, this.state.gaslimit);
-    let gasfee = atto2base(gasfeeatto);
+    let gasfeenano = calcGasFee(this.state.gasprice, this.state.gaslimit);
+    let gasfee = nano2base(gasfeenano);
     let comstomGasGroupClasses = classNames(
       {
         [`d-none`]: !this.state.isComstomGas,
@@ -281,7 +280,8 @@ class SendPage extends Component {
                       GAS Fee = GASLimit * GASPrice
                     </small>
                     <small class="form-hint">
-                      Default Gas Limit: 1000, GAS Price: 1000
+                      
+                      Default Gas Limit: <span>{MinimumGasLimit}</span>, GAS Price: <span>{MinimumGasPrice}</span> NanoCoin
                     </small>
                   </div>
                 </div>
@@ -296,8 +296,8 @@ class SendPage extends Component {
                     let gasprice = this.state.gasprice;
                     let gaslimit = this.state.gaslimit;
                     if (this.state.isComstomGas){
-                        gasprice = DefaultGasPrice;
-                        gaslimit = DefaultGasLimit;
+                        gasprice = MinimumGasPrice.toString();
+                        gaslimit = MinimumGasLimit.toString();
                     }
                     this.setState({ 
                       isComstomGas: !this.state.isComstomGas,
