@@ -1,12 +1,12 @@
-function postMsg(msg){
+function postAndCallMethod(msg){
     window.postMessage({type: "FROM_PAGE", text: msg}, "*");
 }
 
 class LibXFSWallet {
     constructor(){
     }
-    sayhello(){
-        postMsg('abc');
+    connect(fn){
+        postAndCallMethod('account.connect');
     }
 }
 export default LibXFSWallet;

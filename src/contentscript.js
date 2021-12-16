@@ -1,2 +1,2 @@
 import LibXFSWallet from './libxfswallt'
-window.xfswallt = new LibXFSWallet();
+window.xfswallet = new LibXFSWallet();

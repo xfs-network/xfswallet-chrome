@@ -9,8 +9,8 @@ const KEY_DEFAULT_NET = 'defaultnet';
 const DEFAULT_NETS = [
     {
         id: 1,
-        name: 'LocalHost 9001',
-        rpcurl: 'http://localhost:9001',
+        name: 'LocalHost',
+        rpcurl: 'http://localhost:9012',
         lock: false,
         default: true,
     },

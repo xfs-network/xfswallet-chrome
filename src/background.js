@@ -1,6 +1,3 @@
-console.log('background.js');
-
-
 import XFSWalletApiHanlder from './xfswallt';
 
 import { AccountDB, ExtraDB, GlobalDB } from "./storage";
@@ -14,4 +11,8 @@ chrome.runtime.onConnect.addListener(function(port) {
     port.onMessage.addListener(async (msg) => {
         await handler.handle(msg);
     });
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+    globaldb.initialSetup();
 });
