@@ -110,14 +110,8 @@ function sleep(t) {
 bs.start();
 
 ReactDOM.render(
-  <Router history={history} db={{
+  <App history={history} db={{
     accountdb: accountdb,
     globaldb: globaldb,
     extradb: extradb,
-  }}>
-    <App history={history} db={{
-      accountdb: accountdb,
-      globaldb: globaldb,
-      extradb: extradb,
-    }} />
-  </Router>, document.getElementById("root"));
+  }} /> , document.getElementById("root"));

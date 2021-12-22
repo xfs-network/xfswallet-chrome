@@ -4,6 +4,7 @@ import {Button} from "./components";
 
 class Initial extends Component{
   render(){
+    console.log('init');
     return(
       <div className="container">
         <div className="mb-20">

@@ -111,6 +111,7 @@ function HomeTransactionList(props) {
 class HomePage extends Component {
   constructor(props) {
     super(props);
+    console.log('home');
     this.state = {
       networks: [],
       accountInfo: {},
