@@ -108,6 +108,17 @@ function sleep(t) {
 }
 
 bs.start();
+console.log('popuindex', chrome.runtime);
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log('popuhandle', request.msg);
+      if (request.msg === "something_completed") {
+          //  To do something
+          console.log(request.data.subject)
+          console.log(request.data.content)
+      }
+  }
+);
 
 ReactDOM.render(
   <App history={history} db={{

@@ -22,24 +22,23 @@ import NetworkMgrPage from "./NetworkMgrPage";
 import NewNetwork from "./newnetwork";
 import NetworkDetail from "./networkdetail";
 import ResetNoncePage from "./resetnoncepage";
-
-// function PrivateRoute({ children, authed, ...props }) {
-//   let auth = useAuth();
-//   console.log('auth', auth);
-//   console.log('authed', authed);
-//   return <Route {...props} render={() => {
-//     return auth.user
-//       ? (children)
-//       : <Redirect to='/initial' />
-//   }} />
-// }
-
-function PrivateRoute({ children, initialed, authed, ...props }) {
-  console.log('aaaaa', authed, initialed);
+import ConnectPage from './ConnectPage';
+function PrivateRoute({ children, initialed, authed,path, ...props }) {
+  console.log('privateroute', path);
   return <Route {...props} render={() => {
-    return initialed && authed
-      ? (children)
-      : <Redirect to='/auth' />
+    if (initialed && authed) {
+      return (children);
+    }else if(!initialed){
+      return <Redirect to={{
+        pathname: '/initial',
+        state: {from: path},
+      }} />
+    } else {
+      return <Redirect to={{
+        pathname: '/auth',
+        state: {from: path},
+      }} />
+    }
   }} />
 }
 function setTimeoutAsync(t) {
@@ -49,16 +48,9 @@ function setTimeoutAsync(t) {
     }, t);
   })
 }
-async function checkAuth(globaldb) {
-  let pass = await globaldb.getPassword();
-  if (!pass) {
-    return false;
-  }
-  return true;
-}
+
 
 function ProvideAuth({ children, authed }) {
-  console.log('privce auth', authed);
   return (
     <div>
       {children}
@@ -66,29 +58,11 @@ function ProvideAuth({ children, authed }) {
   );
 }
 
-function AsyncRoute({ children, authed, ...props  }) {
-  console.log('AsyncRoute', authed, props);
-  // console.log();
-  const {history} = props;
-  console.log(history);
-  if (authed) {
-    history.push('/');
-  }
-  return <Route {...props} render={() => {
-    return !authed
-      ? (children)
-      : <Redirect to='/' />
-  }} />;
-}
-
 function InitialRoute({ children, initialed, ...props  }) {
-  console.log('InitialRoute', initialed, props);
-  // console.log();
   const {history} = props;
-  // console.log(history);
+  const {location: {state}} = history;
   if (initialed) {
-    // history.push('/');
-    console.log('InitialRoute:push');
+    history.replace(state.from||'/');
   }
   return <Route {...props}>
     {children}
@@ -96,33 +70,57 @@ function InitialRoute({ children, initialed, ...props  }) {
 }
 
 function AuthRoute({ children, authed, ...props  }) {
-  console.log('AuthRoute', authed, props);
-  // console.log();
   const {history} = props;
-  // console.log(history);
+  const {location: {state}} = history;
   if (authed) {
-    // history.push('/');
-    console.log('AuthRoute:push');
+    history.replace(state.from||'/');
   }
   return <Route {...props}>
-    {children}
+    {React.cloneElement(children)}
   </Route>;
+}
+
+async function checkAuth(globaldb) {
+  let last = await globaldb.getPasswordLockTime();
+  if (!last){
+    return false;
+  }
+  let now = new Date().getTime();
+  return !(now - last > 0);
+}
+async function checkInitialization(globaldb) {
+  let pass = await globaldb.getPassword();
+  if (!pass) {
+    return false;
+  }
+  return true;
 }
 class App extends Component {
   constructor(props) {
     super(props);
-    // console.log(this.props);
     this.state = {
       authed: false,
       initialed: false,
+      pageState: false
     }
   }
 
   async componentDidMount() {
-    const { db: { extradb, globaldb } } = this.props;
+    const {history, db: { extradb, globaldb } } = this.props;
+    let initiated = await checkInitialization(globaldb);
     let authed = await checkAuth(globaldb);
-    await setTimeoutAsync(5000);
-    // this.setState({ authed: true });
+    this.setState({ initialed: initiated, authed: authed});
+    const pageState = await extradb.popPageState();
+    if (pageState){
+      console.log('pushle');
+      history.push('/connect');
+    }
+  }
+  async unlockPassword(){
+    this.setState({authed: true });
+  }
+  async setupPassword(){
+    this.setState({initialed: true });
   }
   render() {
     return (
@@ -133,61 +131,54 @@ class App extends Component {
               <HomePage {...this.props} />
             </PrivateRoute>
             <InitialRoute exact path="/initial" {...this.props} {...this.state}>
-              <Initial {...this.props} />
+              <Initial {...this.props} {...this.state }/>
             </InitialRoute>
-            <AuthRoute exact path="/auth" {...this.props} {...this.state}>
-              <AuthPage {...this.props} />
+            <AuthRoute exact path="/auth" {...this.props} {...this.state} >
+              <AuthPage {...this.props} unlockPasswordFn={()=>{this.unlockPassword()}}/>
             </AuthRoute>
             <Route exact path="/createpage">
-              <CreatePage {...this.props} />
+              <CreatePage {...this.props} 
+              setupPasswordFn={()=>{this.setupPassword()}}
+              unlockPasswordFn={()=>{this.unlockPassword()}}
+              />
             </Route>
-            {/* <Route exact path="/send" element={
-            <RequireAuth {...this.props}>
+            
+            <PrivateRoute exact path="/send" {...this.props} {...this.state}>
               <SendPage {...this.props}/>
-            </RequireAuth>
-          } />
-          <Route exact path="/accountmgr" element={
-            <RequireAuth {...this.props}>
+            </PrivateRoute>
+            <PrivateRoute exact path="/accountmgr" {...this.props} {...this.state}>
               <AccoutMgrPage {...this.props}/>
-            </RequireAuth>
-          } />
-          <Route exact path="/accountdetail" element={
-            <RequireAuth {...this.props}>
+            </PrivateRoute>
+            <PrivateRoute exact path="/accountdetail" {...this.props} {...this.state}>
               <AccountDetailPage {...this.props}/>
-            </RequireAuth>
-          } />
-          <Route exact path="/createwallet" element={
-            <RequireAuth {...this.props}>
+            </PrivateRoute>
+            <PrivateRoute exact path="/accountdetail" {...this.props} {...this.state}>
+              <AccountDetailPage {...this.props}/>
+            </PrivateRoute>
+            <PrivateRoute exact path="/createwallet" {...this.props} {...this.state}>
               <CreateWalletPage {...this.props}/>
-            </RequireAuth>
-          }  />
-          <Route exact path="/keyexport" element={
-            <RequireAuth {...this.props}>
+            </PrivateRoute>
+            <PrivateRoute exact path="/keyexport" {...this.props} {...this.state}>
               <KeyExportPage {...this.props}/>
-            </RequireAuth>
-          } />
-          <Route exact path="/keyimport" element={
-            <RequireAuth {...this.props}>
+            </PrivateRoute>
+            <PrivateRoute exact path="/keyimport" {...this.props} {...this.state}>
               <KeyImportPage {...this.props}/>
-            </RequireAuth>
-          } />
-          <Route exact path="/networkmgr">
-            <NetworkMgrPage {...this.props}></NetworkMgrPage>
-          </Route>
-          <Route exact path="/newnetwork">
-            <NewNetwork {...this.props}></NewNetwork>
-          </Route>
-          <Route exact path="/networkdetail">
-            <NetworkDetail {...this.props}></NetworkDetail>
-          </Route>
-          <Route exact path="/resetnonce">
-            <ResetNoncePage {...this.props}></ResetNoncePage>
-          </Route>
-          <Route exact path="/createpage">
-            <CreatePage {...this.props}></CreatePage>
-          </Route> */}
-
-
+            </PrivateRoute>
+            <PrivateRoute exact path="/networkmgr" {...this.props} {...this.state}>
+              <NetworkMgrPage {...this.props}/>
+            </PrivateRoute>
+            <PrivateRoute exact path="/newnetwork" {...this.props} {...this.state}>
+              <NewNetwork {...this.props}/>
+            </PrivateRoute>
+            <PrivateRoute exact path="/networkdetail" {...this.props} {...this.state}>
+              <NetworkDetail {...this.props}/>
+            </PrivateRoute>
+            <PrivateRoute exact path="/resetnonce" {...this.props} {...this.state}>
+              <ResetNoncePage {...this.props}/>
+            </PrivateRoute>
+            <PrivateRoute exact path="/connect" {...this.props} {...this.state}>
+              <ConnectPage {...this.props}/>
+            </PrivateRoute>
           </Switch>
         </Router>
       </ProvideAuth>

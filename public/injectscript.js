@@ -1,6 +1,5 @@
 var port = chrome.runtime.connect();
 window.addEventListener("message", (event) => {
-  // We only accept messages from ourselves
   if (event.source != window) {
     return;
   }
@@ -8,7 +7,9 @@ window.addEventListener("message", (event) => {
     port.postMessage(event.data.text);
   }
 }, false);
-
+port.onMessage.addListener((msg)=>{
+  window.postMessage({type: "FROM_XFSWALLET", text: msg}, "*");
+});
 function injectScript(file_path, tag) {
     var node = document.getElementsByTagName(tag)[0];
     var script = document.createElement('script');

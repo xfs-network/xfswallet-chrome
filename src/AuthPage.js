@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { Button } from "./components";
+import { Button,Notify } from "./components";
+import classNames from "classnames";
+import {PASSWORD_LOCK_TIME} from './config';
 const PASSWORD_LIMIT_MIN = 4;
 class AuthPage extends Component {
     constructor(props){
@@ -7,6 +9,22 @@ class AuthPage extends Component {
         this.state = {
             password: '',
         }
+    }
+    async handleUnlock(){
+        const { db: { extradb, globaldb },history, unlockPasswordFn,from} = this.props;
+        const pass = await globaldb.getPassword();
+        if (pass !== this.state.password){
+            await Notify.error('Password is incorrect');
+            return;
+        }
+        let t = new Date().getTime();
+        t += PASSWORD_LOCK_TIME;
+        await globaldb.setPasswordLockTime(t);
+        
+        // const {location: {state}} = history;
+        // console.log('state.from', state);
+        // console.log('props.from', from);
+        await unlockPasswordFn();
     }
     render() {
         let passwordhintcolor = ()=>{
@@ -22,6 +40,10 @@ class AuthPage extends Component {
             }
             return false;
         };
+        let passwordhintclasses = classNames(
+            {
+              [`hint-color-${passwordhintcolor()}`]: true,
+            }, 'form-hint');
         return (
             <div className="container">
                 <div className="mb-20">
@@ -41,7 +63,7 @@ class AuthPage extends Component {
                                         this.setState({password: val});
                                     }}
                                     className="form-control" placeholder="Password" />
-                                <small className={passwordhintcolor}>
+                                <small className={passwordhintclasses}>
                                     Must be at {PASSWORD_LIMIT_MIN} chartacters.
                                 </small>
                             </div>
@@ -49,7 +71,7 @@ class AuthPage extends Component {
                         <div>
                             <Button color="primary"
                                 disabled={comfirmButtonDisabled()}
-                                onClick={async () => this.handleCreteWallet()}>
+                                onClick={async () => this.handleUnlock()}>
                                 Unlock
                             </Button>
                         </div>

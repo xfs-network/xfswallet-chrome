@@ -1,33 +1,25 @@
 class XFSWalletApiHanlder {
-    constructor(port, appdb){
+    constructor({port, appdb, winmgr}){
         this.port = port;
         this.appdb = appdb;
+        this.winmgr = winmgr;
     }
     sendTransaction(){
 
     }
-    async handle(msg){
-        console.log(this.appdb);
-        console.log('handle msg', msg);
+    async openPopupWindow({page,state}){
+        
+    }
+    async handle({method,reqId}){
         const {extradb} = this.appdb;
-        await extradb.setPageState({
-            page: '/abc',
+        await this.winmgr.openPoputWindow({
+            page: '/autha',
             state: {
-                to: 'aaa'
+                
             }
-        });
-        chrome.windows.create({
-            url: chrome.runtime.getURL("popup.html"),
-            focused: true,
-            height: 624,
-            width: 392,
-            type: "popup"
-        },(win)=>{
-            const tab0 = win.tabs[0];
-            console.log('win', win);
-            console.log('tb0', tab0);
-            
-        });
+        }, (data)=>{
+            this.port.postMessage(data);
+        }, reqId);
     }
 }
 

@@ -2,7 +2,7 @@
 import localforage from "localforage";
 
 const KEY_PASSWORD = 'password';
-
+const KEY_PASSWORD_LOCK = 'password-lock';
 const KEY_NETWORK_PRE = 'net:';
 const KEY_NETWORK_STATUS_PRE = 'net-status:';
 const KEY_DEFAULT_NET = 'defaultnet';
@@ -34,6 +34,12 @@ class GlobalDB {
     }
     setPassword(pass) {
         return this.db.setItem(KEY_PASSWORD, pass);
+    }
+    setPasswordLockTime(time=new Date().getTime()) {
+        return this.db.setItem(KEY_PASSWORD_LOCK, time);
+    }
+    getPasswordLockTime() {
+        return this.db.getItem(KEY_PASSWORD_LOCK);
     }
     getPassword(){
         return this.db.getItem(KEY_PASSWORD);

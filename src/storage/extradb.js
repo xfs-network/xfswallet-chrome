@@ -17,6 +17,11 @@ class ExtraDB {
     getPageState(){
         return this.db.getItem(KEY_PAGE_STATE);
     }
+    async popPageState(){
+        const state = await this.db.getItem(KEY_PAGE_STATE);
+        await this.setPageState(false);
+        return state;
+    }
     dropDB(){
         return this.db.dropInstance();
     }
