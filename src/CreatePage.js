@@ -3,6 +3,7 @@ import React, { Component } from "react";
 
 import { Button } from "./components";
 import { genRadmonAccount, XFSVERSION } from "./util/xfslib";
+import {PASSWORD_LOCK_TIME} from './config';
 function Appbar(props) {
   return (
     <div className="appbar">
@@ -42,10 +43,16 @@ class CreatePage extends Component {
     this.setState({password2: val});
   }
   async handleCreteWallet(){
-    const {history, db: {globaldb, accountdb}} = this.props;
+    const {history, db: {globaldb, accountdb}, setupPasswordFn,unlockPasswordFn } = this.props;
+    console.log(setupPasswordFn);
     await globaldb.setPassword(this.state.password1);
+    let t = new Date().getTime();
+    t += PASSWORD_LOCK_TIME;
+    await globaldb.setPasswordLockTime(t);
     let a = genRadmonAccount();
     await accountdb.addAccount('My Account 1', a);
+    await unlockPasswordFn();
+    await setupPasswordFn();
     history.replace('/');
   }
   render() {

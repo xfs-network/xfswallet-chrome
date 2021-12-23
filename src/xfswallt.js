@@ -1,33 +1,37 @@
 class XFSWalletApiHanlder {
-    constructor(port, appdb){
+    constructor({port, appdb, winmgr}){
         this.port = port;
         this.appdb = appdb;
+        this.winmgr = winmgr;
     }
-    sendTransaction(){
-
+    async onSendTransaction(reqId, params){
+        await this.winmgr.openPoputWindow({
+            page: '/sendtx',
+            state: params
+        }, (data)=>{
+            this.port.postMessage(data);
+        }, reqId);
     }
-    async handle(msg){
-        console.log(this.appdb);
-        console.log('handle msg', msg);
-        const {extradb} = this.appdb;
-        await extradb.setPageState({
-            page: '/abc',
-            state: {
-                to: 'aaa'
-            }
-        });
-        chrome.windows.create({
-            url: chrome.runtime.getURL("popup.html"),
-            focused: true,
-            height: 624,
-            width: 392,
-            type: "popup"
-        },(win)=>{
-            const tab0 = win.tabs[0];
-            console.log('win', win);
-            console.log('tb0', tab0);
-            
-        });
+    async onTransfer(reqId, params){
+        await this.winmgr.openPoputWindow({
+            page: '/sendtx',
+            state: params
+        }, (data)=>{
+            this.port.postMessage(data);
+        }, reqId);
+    }
+    async onConnect(reqId, params){
+        await this.winmgr.openPoputWindow({
+            page: '/connect',
+            state: params
+        }, (data)=>{
+            this.port.postMessage(data);
+        }, reqId);
+    }
+    async handle({method,params,reqId}){
+        let methodName = method.replace(/^\S/, s => s.toUpperCase());
+        const fn = Reflect.get(this, `on${methodName}`);
+        await fn.bind(this,reqId,params)();
     }
 }
 

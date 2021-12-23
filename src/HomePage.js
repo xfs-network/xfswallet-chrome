@@ -111,6 +111,10 @@ function HomeTransactionList(props) {
 class HomePage extends Component {
   constructor(props) {
     super(props);
+    const {history, launchParams:{page}} =  props;
+    if (page) {
+      history.push(page)
+    }
     this.state = {
       networks: [],
       accountInfo: {},
