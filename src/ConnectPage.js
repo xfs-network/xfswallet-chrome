@@ -7,15 +7,16 @@ import './connectpage.css';
 class ConnectPage extends Component {
     constructor(props) {
         super(props);
+        // const { history, } = this.props;
+        console.log('props', props);
     }
+    
     async handleConnect() {
-        console.log('connect');
         const { history, db: { globaldb, accountdb } } = this.props;
         let defaultAddr = await accountdb.getDefault();
         if (!defaultAddr){
             return;
         }
-        console.log('connect', defaultAddr);
         chrome.runtime.sendMessage({method:'closewin', params: {
             address: defaultAddr
         }});

@@ -23,6 +23,7 @@ import NewNetwork from "./newnetwork";
 import NetworkDetail from "./networkdetail";
 import ResetNoncePage from "./resetnoncepage";
 import ConnectPage from './ConnectPage';
+import SendTxPage from './SendTxPage';
 function PrivateRoute({ children, initialed, authed,path, ...props }) {
   console.log('privateroute', path);
   return <Route {...props} render={() => {
@@ -101,7 +102,8 @@ class App extends Component {
     this.state = {
       authed: false,
       initialed: false,
-      pageState: false
+      pageState: false,
+      launchParams: {}
     }
   }
 
@@ -112,8 +114,9 @@ class App extends Component {
     this.setState({ initialed: initiated, authed: authed});
     const pageState = await extradb.popPageState();
     if (pageState){
-      console.log('pushle');
-      history.push('/connect');
+      console.log('pushle', pageState);
+      this.setState({launchParams: {...pageState}});
+      history.push(pageState.page);
     }
   }
   async unlockPassword(){
@@ -128,7 +131,7 @@ class App extends Component {
         <Router {...this.props}>
           <Switch>
             <PrivateRoute exact path="/" {...this.props} {...this.state}>
-              <HomePage {...this.props} />
+              <HomePage {...this.props} {...this.state}/>
             </PrivateRoute>
             <InitialRoute exact path="/initial" {...this.props} {...this.state}>
               <Initial {...this.props} {...this.state }/>
@@ -177,7 +180,10 @@ class App extends Component {
               <ResetNoncePage {...this.props}/>
             </PrivateRoute>
             <PrivateRoute exact path="/connect" {...this.props} {...this.state}>
-              <ConnectPage {...this.props}/>
+              <ConnectPage {...this.props} {...this.state}/>
+            </PrivateRoute>
+            <PrivateRoute exact path="/sendtx" {...this.props} {...this.state}>
+              <SendTxPage {...this.props} {...this.state}/>
             </PrivateRoute>
           </Switch>
         </Router>

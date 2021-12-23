@@ -30,6 +30,30 @@ class LibXFSWallet {
         });
         this.reqId += 1;
     }
+    sendTransaction(opts,fn){
+        this.reqCall.push({
+            reqId: this.reqId,
+            call: fn
+        });
+        postAndCallMethod({
+            reqId: this.reqId,
+            method: 'sendTransaction',
+            params: opts,
+        });
+        this.reqId += 1;
+    }
+    transfer(opts,fn){
+        this.reqCall.push({
+            reqId: this.reqId,
+            call: fn
+        });
+        postAndCallMethod({
+            reqId: this.reqId,
+            method: 'transfer',
+            params: opts,
+        });
+        this.reqId += 1;
+    }
     onMessage(msg){
         const {data, reqId} = msg;
         const target = _.find(this.reqCall, { reqId: reqId });

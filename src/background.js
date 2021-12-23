@@ -56,13 +56,14 @@ chrome.runtime.onConnect.addListener(function(port) {
     });
     port.onMessage.addListener(async (msg, sender, sendResponse) => {
         console.log('handleMessage', msg, sender, sendResponse);
-        const {magic,method,reqId} = JSON.parse(msg);
+        const {magic,method,reqId, params} = JSON.parse(msg);
         if (magic !== WALLET_MAGIC){
             return;
         }
         await handler.handle({
             method: method,
-            reqId: reqId
+            reqId: reqId,
+            params: params,
         });
     });
 });
