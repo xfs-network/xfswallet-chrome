@@ -7,6 +7,7 @@ const NANO_BASE_LEN = 9;
 const ATTO_NANO_LEN = 9;
 
 function atto2base(val,pad) {
+    console.log('atto2base', val);
     let valbn = new BN(val, 10);
     let base = new BN(10).pow(new BN(ATTO_BASE_LEN));
     let fraction = valbn.mod(base).toString(10);;
@@ -22,6 +23,7 @@ function atto2base(val,pad) {
 }
 
 function nano2base(val,pad) {
+    console.log('nano2base', val);
     let valbn = new BN(val, 10);
     let base = new BN(10).pow(new BN(NANO_BASE_LEN));
     let fraction = valbn.mod(base).toString(10);;
@@ -37,6 +39,7 @@ function nano2base(val,pad) {
 }
 
 function base2atto(val) {
+    console.log('base2atto', val);
     let comps = val.split('.');
     if (comps.length > 2){
         throw new Error('too many decimal points');
@@ -58,6 +61,7 @@ function base2atto(val) {
 }
 
 function atto2nano(val,pad) {
+    console.log('atto2nano', val);
     let valbn = new BN(val, 10);
     let base = new BN(10).pow(new BN(ATTO_NANO_LEN));
     let fraction = valbn.mod(base).toString(10);;
@@ -72,6 +76,7 @@ function atto2nano(val,pad) {
     return value;
 }
 function nano2atto(val) {
+    console.log('nano2atto', val);
     let comps = val.split('.');
     if (comps.length > 2){
         throw new Error('too many decimal points');

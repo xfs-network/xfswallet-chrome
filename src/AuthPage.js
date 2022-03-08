@@ -26,6 +26,7 @@ class AuthPage extends Component {
         // console.log('props.from', from);
         await unlockPasswordFn();
     }
+    
     render() {
         let passwordhintcolor = ()=>{
             if(this.state.password.length < PASSWORD_LIMIT_MIN){
@@ -51,7 +52,9 @@ class AuthPage extends Component {
                     <p>Unlock your wallet</p>
                 </div>
                 <div>
-                    <form action="">
+                    <form action="" onSubmit={(e)=>{
+                        e.preventDefault();
+                    }}>
                         <div className="mb-10">
                             <label htmlFor="password" className="form-label">
                                 Password

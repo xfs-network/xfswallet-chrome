@@ -225,7 +225,9 @@ class SendPage extends Component {
           title="Send"
         />
         <div className="mt-20 pb-20">
-          <form action="">
+          <form action="" onSubmit={(e)=>{
+            e.preventDefault();
+          }}>
             <div className="form-group mb-10">
               <label className="form-label">
                 To address
@@ -253,6 +255,7 @@ class SendPage extends Component {
                     value={this.state.value}
                     onChange={(e) => {
                       let val = e.target.value;
+                      val = val.replace(/[^0-9]/g,'');
                       this.setState({ value: val });
                     }}
                     placeholder="value" />
@@ -291,8 +294,8 @@ class SendPage extends Component {
                     let gasprice = this.state.gasprice;
                     let gaslimit = this.state.gaslimit;
                     if (this.state.isComstomGas){
-                        gasprice = MinimumGasPrice;
-                        gaslimit = MinimumGasLimit;
+                        gasprice = MinimumGasPrice.toString();
+                        gaslimit = MinimumGasLimit.toString();
                     }
                     this.setState({ 
                       isComstomGas: !this.state.isComstomGas,
@@ -315,6 +318,7 @@ class SendPage extends Component {
                     value={this.state.gasprice}
                     onChange={(e) => {
                       let val = e.target.value;
+                      val = val.replace(/[^0-9]/g,'');
                       this.setState({ gasprice: val });
                     }} placeholder="GAS Price" />
                 </div>
@@ -333,6 +337,7 @@ class SendPage extends Component {
                     value={this.state.gaslimit}
                     onChange={(e) => {
                       let val = e.target.value;
+                      val = val.replace(/[^0-9]/g,'');
                       this.setState({ gaslimit: val });
                     }} placeholder="GAS Limit" />
                 </div>

@@ -319,7 +319,10 @@ class SendTxPage extends Component {
                     value={this.state.gasprice}
                     onChange={(e) => {
                       let val = e.target.value;
-                      this.setState({ gasprice: val });
+                      if (val === '' || /[0-9]+$/.test(val)){
+                        console.log('---');
+                        this.setState({ gasprice: val });
+                      }
                     }} placeholder="GAS Price" />
                 </div>
                 <small className={gaspricehintclasses()}>
