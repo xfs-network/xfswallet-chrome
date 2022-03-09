@@ -149,8 +149,8 @@ class HomePage extends Component {
       txs.push(txobj);
     }
     txs = sortList(txs, (c,n)=>{
-      let ct = parseInt(c.timestamp);
-      let nt = parseInt(n.timestamp);
+      let ct = parseInt(c.nonce);
+      let nt = parseInt(n.nonce);
       return ct < nt;
     });
     this.setState({
@@ -189,8 +189,9 @@ class HomePage extends Component {
     clearInterval(this.inrvSyncBalance);
   }
 
-  handleTxItemClick(e, tx){
-    console.log(`0x${tx}`);
+  async handleTxItemClick(e, tx){
+    // await chrome.tabs.create({url: `http://localhost:9013/search?q=0x${tx}`});
+    await chrome.tabs.create({url: `https://scan.xfs.tech/search?q=0x${tx}`});
   }
   handleToAccountDetialPage(e) {
     this.props.history.push('/accountdetail',

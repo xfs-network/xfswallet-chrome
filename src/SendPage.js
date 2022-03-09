@@ -64,7 +64,11 @@ class SendPage extends Component {
     }
     let acc = await accountdb.getAccount(this.state.fromaddr);
     let network = await globaldb.getNetwork(this.state.networkid);
-    let nonce = await accountdb.getAddressNonce(this.state.fromaddr, this.state.networkid);
+    let client = new HttpJsonRpcClient({url: network.rpcurl});
+    let nonce = await client.call({
+      method: 'TxPool.GetAddrTxNonce',
+      params: [acc.addr]
+    });
     let txdata = new Transaction({
       to: this.state.toaddr,
       value: valuedata,
@@ -76,7 +80,6 @@ class SendPage extends Component {
     txdata.signWithPrivateKey(acc.key.key);
     let txdatajson = txdata.toJSON();
     let txjsonb64 = Base64.encode(txdatajson);
-    let client = new HttpJsonRpcClient({url: network.rpcurl});
     try{
       let result = await client.call({
         method: 'TxPool.SendRawTransaction',
@@ -85,7 +88,6 @@ class SendPage extends Component {
         }
       });
       await accountdb.setAddressTx(this.state.fromaddr, this.state.networkid, txdata);
-      await accountdb.setAddressNonce(this.state.fromaddr, this.state.networkid, nonce+1);
       await Notify.success('Send transaction succeeded');
       history.goBack();
     }catch(e){
