@@ -3,13 +3,12 @@ import { BN } from "bn.js";
 const ATTO_BASE_LEN = 18;
 
 const NANO_BASE_LEN = 9;
-
 const ATTO_NANO_LEN = 9;
 
 function atto2base(val,pad) {
     let valbn = new BN(val, 10);
     let base = new BN(10).pow(new BN(ATTO_BASE_LEN));
-    let fraction = valbn.mod(base).toString(10);;
+    let fraction = valbn.mod(base).toString(10);
     while (fraction.length < ATTO_BASE_LEN) {
         fraction = `0${fraction}`;
     }
@@ -60,7 +59,7 @@ function base2atto(val) {
 function atto2nano(val,pad) {
     let valbn = new BN(val, 10);
     let base = new BN(10).pow(new BN(ATTO_NANO_LEN));
-    let fraction = valbn.mod(base).toString(10);;
+    let fraction = valbn.mod(base).toString(10);
     while (fraction.length < ATTO_NANO_LEN) {
         fraction = `0${fraction}`;
     }
@@ -91,7 +90,20 @@ function nano2atto(val) {
     let atto = (whole.mul(base)).add(fraction);
     return atto.toString(10);
 }
-
+function nano2base(val,pad) {
+    let valbn = new BN(val, 10);
+    let base = new BN(10).pow(new BN(NANO_BASE_LEN));
+    let fraction = valbn.mod(base).toString(10);
+    while (fraction.length < NANO_BASE_LEN) {
+        fraction = `0${fraction}`;
+    }
+    if (!pad){
+        fraction = fraction.match(/^([0-9]*[1-9]|0)(0*)/)[1];
+    }
+    let whole = valbn.div(base).toString(10);
+    let value = `${whole}${fraction == '0' ? '' : `.${fraction}`}`;
+    return value;
+}
 export {
     atto2base,
     base2atto,

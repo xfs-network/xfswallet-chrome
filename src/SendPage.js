@@ -79,6 +79,7 @@ class SendPage extends Component {
     });
     txdata.signWithPrivateKey(acc.key.key);
     let txdatajson = txdata.toJSON();
+    console.log(`txdata(obj), hash=${txdata.hash()}`, txdata.correctedObj());
     let txjsonb64 = Base64.encode(txdatajson);
     try{
       let result = await client.call({
@@ -282,6 +283,7 @@ class SendPage extends Component {
                     </small>
                     <small class="form-hint">
                       Default Gas Limit: {MinimumGasLimit}, GAS Price: {MinimumGasPrice} NanoCoin
+
                     </small>
                   </div>
                 </div>
