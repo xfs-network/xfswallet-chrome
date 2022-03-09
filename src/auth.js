@@ -1,0 +1,3 @@
+const globalAuth = {
+    isAuthenticated: false,
+}

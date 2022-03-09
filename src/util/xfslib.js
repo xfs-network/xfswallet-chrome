@@ -1,7 +1,7 @@
 
 import { BN } from "bn.js";
 import { genRandomKey,hash256,_ripemd160,b582str,importKeyFromPrivate, signFromKey, stringhash256 } from "./crypto";
-import {atto2nano, nano2atto} from "./xfslibutil";
+import { nano2atto } from "./xfslibutil";
 
 const XFSVERSION = 1;
 const XFS_KEY_VER = 1;
@@ -181,8 +181,8 @@ class Transaction {
         this.value = params.value;
     }
     correctedObj(){
-        let gasPriceAtto = nano2atto(this.gasPrice);
-        let gasPrice = new BN(gasPriceAtto, 10);
+        let gasPriceatto = nano2atto(this.gasPrice);
+        let gasPrice = new BN(gasPriceatto, 10);
         let gasLimit = new BN(this.gasLimit, 10);
         let value = new BN(this.value, 10);
         let valueStr = value.toString(10);

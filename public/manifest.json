@@ -1,7 +1,7 @@
 {
     "name": "XFS Wallet",
     "description": "XFS Wallet",
-    "version": "1.2.0",
+    "version": "1.4.0",
     "manifest_version": 3,
     "icons": { "16": "icon16.png",
       "48": "icon48.png",
@@ -13,5 +13,24 @@
         "24": "icon24.png",
         "32": "icon32.png"
       }
-    }
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "permissions": ["tabs"],
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["injectscript.js"]
+      }
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "images/*",
+          "contentscript.js"
+        ],
+        "matches": ["<all_urls>"]
+      }
+    ]
 }

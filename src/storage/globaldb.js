@@ -2,17 +2,24 @@
 import localforage from "localforage";
 
 const KEY_PASSWORD = 'password';
-
+const KEY_PASSWORD_LOCK = 'password-lock';
 const KEY_NETWORK_PRE = 'net:';
 const KEY_NETWORK_STATUS_PRE = 'net-status:';
 const KEY_DEFAULT_NET = 'defaultnet';
 const DEFAULT_NETS = [
     {
         id: 1,
-        name: 'LocalHost 9012',
+        name: 'Test Network',
+        rpcurl: 'https://api.scan.xfs.tech/jsonrpc/v2',
+        lock: true,
+        default: true,
+    },
+    {
+        id: 2,
+        name: 'LocalHost',
         rpcurl: 'http://localhost:9012',
         lock: false,
-        default: true,
+        default: false,
     },
 ];
 class GlobalDB {
@@ -34,6 +41,12 @@ class GlobalDB {
     }
     setPassword(pass) {
         return this.db.setItem(KEY_PASSWORD, pass);
+    }
+    setPasswordLockTime(time=new Date().getTime()) {
+        return this.db.setItem(KEY_PASSWORD_LOCK, time);
+    }
+    getPasswordLockTime() {
+        return this.db.getItem(KEY_PASSWORD_LOCK);
     }
     getPassword(){
         return this.db.getItem(KEY_PASSWORD);

@@ -30,6 +30,58 @@ function webpackBuild(cb){
       })
     ).pipe(gulp.dest('dist/'));
 }
+function webpackBuildContentScript(cb){
+  return gulp.src('src/contentscript.js')
+    .pipe(
+      webpack({
+        mode: 'production',
+        output: {
+          filename: 'contentscript.js'
+        },
+        module: {
+          rules: [
+            {
+              test: /\.(js|jsx)$/,
+              exclude: /(node_modules|bower_components)/,
+              loader: "babel-loader",
+              options: { presets: ["@babel/env"] }
+            },
+            {
+              test: /\.css$/,
+              use: ["style-loader", "css-loader"]
+            }
+          ]
+        },
+        resolve: { extensions: ["*", ".js", ".jsx"] },
+      })
+    ).pipe(gulp.dest('dist/'));
+}
+function webpackBuildBackground(cb){
+  return gulp.src('src/background.js')
+    .pipe(
+      webpack({
+        mode: 'production',
+        output: {
+          filename: 'background.js'
+        },
+        module: {
+          rules: [
+            {
+              test: /\.(js|jsx)$/,
+              exclude: /(node_modules|bower_components)/,
+              loader: "babel-loader",
+              options: { presets: ["@babel/env"] }
+            },
+            {
+              test: /\.css$/,
+              use: ["style-loader", "css-loader"]
+            }
+          ]
+        },
+        resolve: { extensions: ["*", ".js", ".jsx"] },
+      })
+    ).pipe(gulp.dest('dist/'));
+}
 function clean() {
   return del(["./dist/"]);
 }
@@ -47,8 +99,8 @@ function watch(cb) {
   return gulp.watch(
     [
       "src/**/*.*",
-    ], gulp.series(webpackBuild, copyAllFiles));
+    ], gulp.series(webpackBuildBackground, webpackBuildContentScript, webpackBuild, copyAllFiles));
 }
 
 exports.default = gulp.series(
-  clean, webpackBuild , copyAllFiles, watch);
+  clean, webpackBuildBackground, webpackBuildContentScript, webpackBuild, copyAllFiles, watch);

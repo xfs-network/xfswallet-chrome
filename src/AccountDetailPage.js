@@ -137,11 +137,6 @@ class AccountDetailPage extends Component {
               </Button>
               <hr/>
               <Button
-                onClick={async ()=>this.handleResetNonce()}>
-                Reset nonce
-              </Button>
-              <hr/>
-              <Button
                 color="danger"
                 onClick={async ()=>this.handleRemoveAddr()}>
                 Remove

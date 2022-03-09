@@ -6,7 +6,7 @@ import { Button, Notify } from "./components";
 import { calcGasFee } from "./util/common";
 import HttpJsonRpcClient from "./util/jsonrpcclient";
 import { exportKey, signTransaction, Transaction } from "./util/xfslib";
-import { atto2base, base2atto, nano2base } from "./util/xfslibutil";
+import { atto2base, base2atto } from "./util/xfslibutil";
 
 function Appbar(props) {
   return (
@@ -28,17 +28,21 @@ function Appbar(props) {
 }
 
 
-const MinimumGasLimit = 25000;
-const MinimumGasPrice = 10;
-class SendPage extends Component {
+const MinimumGasLimit = 100;
+const MinimumGasPrice = 100;
+const DefaultGasLimit = '100';
+const DefaultGasPrice = '100';
+class SendTxPage extends Component {
   constructor(props) {
     super(props);
+    console.log('props', props);
+    const {launchParams:{state}} = props;
     this.state = {
-      toaddr: '',
-      value: '',
+      toaddr: state.to||'',
+      value: state.value||'',
       isComstomGas: false,
-      gaslimit: MinimumGasLimit.toString(),
-      gasprice: MinimumGasPrice.toString(),
+      gaslimit: DefaultGasLimit,
+      gasprice: DefaultGasPrice,
       isAdvanced: false,
       data: '',
       fromaddr: '',
@@ -64,11 +68,7 @@ class SendPage extends Component {
     }
     let acc = await accountdb.getAccount(this.state.fromaddr);
     let network = await globaldb.getNetwork(this.state.networkid);
-    let client = new HttpJsonRpcClient({url: network.rpcurl});
-    let nonce = await client.call({
-      method: 'TxPool.GetAddrTxNonce',
-      params: [acc.addr]
-    });
+    let nonce = await accountdb.getAddressNonce(this.state.fromaddr, this.state.networkid);
     let txdata = new Transaction({
       to: this.state.toaddr,
       value: valuedata,
@@ -79,8 +79,8 @@ class SendPage extends Component {
     });
     txdata.signWithPrivateKey(acc.key.key);
     let txdatajson = txdata.toJSON();
-    console.log(`txdata(obj), hash=${txdata.hash()}`, txdata.correctedObj());
     let txjsonb64 = Base64.encode(txdatajson);
+    let client = new HttpJsonRpcClient({url: network.rpcurl});
     try{
       let result = await client.call({
         method: 'TxPool.SendRawTransaction',
@@ -89,6 +89,7 @@ class SendPage extends Component {
         }
       });
       await accountdb.setAddressTx(this.state.fromaddr, this.state.networkid, txdata);
+      await accountdb.setAddressNonce(this.state.fromaddr, this.state.networkid, nonce+1);
       await Notify.success('Send transaction succeeded');
       history.goBack();
     }catch(e){
@@ -96,8 +97,8 @@ class SendPage extends Component {
     }
   }
   render() {
-    let gasfeenano = calcGasFee(this.state.gasprice, this.state.gaslimit);
-    let gasfee = nano2base(gasfeenano);
+    let gasfeeatto = calcGasFee(this.state.gasprice, this.state.gaslimit);
+    let gasfee = atto2base(gasfeeatto);
     let comstomGasGroupClasses = classNames(
       {
         [`d-none`]: !this.state.isComstomGas,
@@ -228,9 +229,7 @@ class SendPage extends Component {
           title="Send"
         />
         <div className="mt-20 pb-20">
-          <form action="" onSubmit={(e)=>{
-            e.preventDefault();
-          }}>
+          <form action="">
             <div className="form-group mb-10">
               <label className="form-label">
                 To address
@@ -258,7 +257,6 @@ class SendPage extends Component {
                     value={this.state.value}
                     onChange={(e) => {
                       let val = e.target.value;
-                      val = val.replace(/[^0-9]/g,'');
                       this.setState({ value: val });
                     }}
                     placeholder="value" />
@@ -282,8 +280,7 @@ class SendPage extends Component {
                       GAS Fee = GASLimit * GASPrice
                     </small>
                     <small class="form-hint">
-                      Default Gas Limit: {MinimumGasLimit}, GAS Price: {MinimumGasPrice} NanoCoin
-
+                      Default Gas Limit: 1000, GAS Price: 1000
                     </small>
                   </div>
                 </div>
@@ -298,8 +295,8 @@ class SendPage extends Component {
                     let gasprice = this.state.gasprice;
                     let gaslimit = this.state.gaslimit;
                     if (this.state.isComstomGas){
-                        gasprice = MinimumGasPrice.toString();
-                        gaslimit = MinimumGasLimit.toString();
+                        gasprice = DefaultGasPrice;
+                        gaslimit = DefaultGasLimit;
                     }
                     this.setState({ 
                       isComstomGas: !this.state.isComstomGas,
@@ -322,8 +319,10 @@ class SendPage extends Component {
                     value={this.state.gasprice}
                     onChange={(e) => {
                       let val = e.target.value;
-                      val = val.replace(/[^0-9]/g,'');
-                      this.setState({ gasprice: val });
+                      if (val === '' || /[0-9]+$/.test(val)){
+                        console.log('---');
+                        this.setState({ gasprice: val });
+                      }
                     }} placeholder="GAS Price" />
                 </div>
                 <small className={gaspricehintclasses()}>
@@ -341,7 +340,6 @@ class SendPage extends Component {
                     value={this.state.gaslimit}
                     onChange={(e) => {
                       let val = e.target.value;
-                      val = val.replace(/[^0-9]/g,'');
                       this.setState({ gaslimit: val });
                     }} placeholder="GAS Limit" />
                 </div>
@@ -395,4 +393,4 @@ class SendPage extends Component {
     );
   }
 }
-export default SendPage;
+export default SendTxPage;

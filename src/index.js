@@ -5,14 +5,14 @@ import './index.css';
 import { Router } from "react-router-dom";
 
 import { createMemoryHistory /* , createBrowserHistory */ } from 'history';
-import { AccountDB, GlobalDB } from "./storage";
+import { AccountDB, ExtraDB, GlobalDB } from "./storage";
 import App from "./App";
 import HttpJsonRpcClient from "./util/jsonrpcclient";
 
 const history = createMemoryHistory();
-
 let accountdb = new AccountDB('xfswalletacc');
 let globaldb = new GlobalDB('xfswalletglobal');
+let extradb = new ExtraDB('xfswalletextra');
 class BackgroundService {
   constructor(params) {
     this.run = false;
@@ -108,13 +108,21 @@ function sleep(t) {
 }
 
 bs.start();
+console.log('popuindex', chrome.runtime);
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log('popuhandle', request.msg);
+      if (request.msg === "something_completed") {
+          //  To do something
+          console.log(request.data.subject)
+          console.log(request.data.content)
+      }
+  }
+);
+
 ReactDOM.render(
-  <Router history={history} db={{
+  <App history={history} db={{
     accountdb: accountdb,
-    globaldb: globaldb
-  }}>
-    <App history={history} db={{
-      accountdb: accountdb,
-      globaldb: globaldb
-    }} />
-  </Router>, document.getElementById("root"));
+    globaldb: globaldb,
+    extradb: extradb,
+  }} /> , document.getElementById("root"));
