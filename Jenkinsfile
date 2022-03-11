@@ -6,22 +6,27 @@ pipeline {
     stages {
         stage('Build') {
             when {
-                branch 'main'
+                branch 'develop'
             }
             steps {
                 script {
                     dockerImage = docker.build("${IMAGE_NAME}")
-                    sh 'echo ${dockerImage.imageName()}'
+                    dockerImage.withRun(){ c ->
+                        sh "docker cp ${c.id}:/var/cache/nodejs/dist ./"
+                    }
                 }
             }
         }
         stage('Release') {
             when {
-                branch 'main'
+                branch 'develop'
             }
             steps {
                 script {
-                    sh 'ls -al'
+                    sh 'zip -r -j dist.zip dist'
+                    json_file = env.WORKSPACE + "/public/manifest.json"
+                    def jsonObj = readJSON file: json_file
+                    echo jsonObj
                 }
             }
         }
