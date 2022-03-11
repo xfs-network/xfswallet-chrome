@@ -8,6 +8,24 @@ The first and most popular XFS-Network wallet. Recommended by XFS-Network Founda
 
 <img src="./screenshot.png" width="600">
 
+## Installation 
+
+### From online
+
+* [Chrome Web Store](https://chrome.google.com/webstore/detail/xfs-wallet/ndgniebdclhafddogjipaanimcjfffmi)
+
+### From locally build
+
+1. Download the dist.zip file from [repo releases page](https://github.com/xfs-network/xfswallet-chrome/releases)
+
+2. Locate the ZIP file on your computer and unzip it.
+
+3. Open chrome and navigate to extensions page using this URL: chrome://extensions.
+
+4. Make sure "Developer mode" is enabled.
+
+5. Click "Load unpacked extension" button, browse the unzipped folder and select it.
+
 ## Building From Source
 
 After cloning the project, open the terminal and navigate to project root directory.
@@ -19,20 +37,11 @@ npm i
 npm run build
 ```
 
-## Install to chrome extensions
-
-1. Open chrome and navigate to extensions page using this URL: chrome://extensions.
-
-2. Make sure "Developer mode" is enabled.
-
-3. Click "Load unpacked extension" button, browse the xfswallet-chrome/dist directory and select it.
-
-
 ## Contribute
 
 If you'd like to contribute to xfswallet-chrome please fork, fix, commit and
 send a pull request. Commits who do not comply with the coding standards
-are ignored (use gofmt!). If you send pull requests make absolute sure that you
+are ignored. If you send pull requests make absolute sure that you
 commit on the `develop` branch and that you do not merge to master.
 Commits that are directly based on master are simply ignored.
 
