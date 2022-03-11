@@ -29,7 +29,7 @@ pipeline {
                     assert jsonObj['version'] != null
                     def version = jsonObj['version']
                     echo "version: ${version}"
-                    sh "gh release delete v${version} || gh release create v${version} -t \"version ${version}\" -n v${version} dist.zip"
+                    sh "gh release delete v${version} || gh release create v${version} -t \"v${version}\" -n \"version ${version}\" dist.zip"
                 }
             }
         }
