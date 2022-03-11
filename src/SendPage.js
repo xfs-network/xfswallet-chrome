@@ -258,7 +258,11 @@ class SendPage extends Component {
                     value={this.state.value}
                     onChange={(e) => {
                       let val = e.target.value;
-                      val = val.replace(/[^0-9]/g,'');
+                      val = val.replace(/[^0-9.]/g,'');
+                      let dps = val.split('.');
+                      if (dps?.length > 2) {
+                        return;
+                      }
                       this.setState({ value: val });
                     }}
                     placeholder="value" />
