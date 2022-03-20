@@ -145,7 +145,9 @@ class App extends Component {
               unlockPasswordFn={()=>{this.unlockPassword()}}
               />
             </Route>
-            
+            <Route exact path="/keyimport" {...this.props} {...this.state}>
+              <KeyImportPage {...this.props}/>
+            </Route>
             <PrivateRoute exact path="/send" {...this.props} {...this.state}>
               <SendPage {...this.props}/>
             </PrivateRoute>

@@ -49,8 +49,11 @@ class CreatePage extends Component {
     let t = new Date().getTime();
     t += PASSWORD_LOCK_TIME;
     await globaldb.setPasswordLockTime(t);
-    let a = genRadmonAccount();
-    await accountdb.addAccount('My Account 1', a);
+    let addressCount = await accountdb.addressCount();
+    if (addressCount === 0){
+        let a = genRadmonAccount();
+        await accountdb.addAccount('My Account 1', a);
+    }
     await unlockPasswordFn();
     await setupPasswordFn();
     history.replace('/');

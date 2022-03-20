@@ -5,6 +5,14 @@ import {Button} from "./components";
 class Initial extends Component{
   constructor(props) {
     super(props);
+    this.state = {
+        ...props
+    }
+  }
+  handleImportKey(){
+    console.log('handle import key');
+    const { history, db: { globaldb, accountdb } } = this.state;
+    history.push('/keyimport');
   }
   render(){
     return(
@@ -19,7 +27,8 @@ class Initial extends Component{
             Create wallet
           </Button>
         </div>
-        <div className="mb-20">
+        <div className="mb-20" onClick={
+            ()=>{this.handleImportKey()}}>
           <Button>Import key</Button>
         </div>
       </div>

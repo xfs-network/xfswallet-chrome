@@ -22,7 +22,7 @@ function Appbar(props) {
   );
 }
 
-class KeyExportPage extends Component {
+class KeyImportPage extends Component {
 
   constructor(props) {
     super(props);
@@ -53,7 +53,11 @@ class KeyExportPage extends Component {
     let count = await accountdb.addressCount();
     await accountdb.addAccount(`My address ${count+1}`, pack);
     await Notify.success('Import success');
-    history.goBack();
+    if (count > 0){
+        history.goBack();
+    }else {
+        history.replace('/createpage');
+    }
   }
   render() {
     let hexcheck = (key)=>{
@@ -106,4 +110,4 @@ class KeyExportPage extends Component {
     );
   }
 }
-export default KeyExportPage;
+export default KeyImportPage;
