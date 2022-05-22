@@ -27,7 +27,8 @@
       {
         "resources": [
           "images/*",
-          "contentscript.js"
+          "contentscript.js",
+          "xfsgojs.min.js"
         ],
         "matches": ["<all_urls>"]
       }

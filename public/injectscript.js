@@ -17,4 +17,5 @@ function injectScript(file_path, tag) {
     script.setAttribute('src', file_path);
     node.appendChild(script);
 }
+injectScript(chrome.runtime.getURL('xfsgojs.min.js'), 'body');
 injectScript(chrome.runtime.getURL('contentscript.js'), 'body');

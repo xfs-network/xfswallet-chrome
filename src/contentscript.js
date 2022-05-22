@@ -1,5 +1,6 @@
 import LibXFSWallet from './libxfswallt'
 window.xfswallet = new LibXFSWallet();
+xfswallet.initial();
 window.addEventListener("message", (event) => {
     if (event.source != window) {
       return;
